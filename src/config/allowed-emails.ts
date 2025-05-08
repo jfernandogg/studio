@@ -7,7 +7,6 @@
  */
 
 export const allowedEmails: string[] = [
-  "user@example.com", // Replace with actual whitelisted emails
-  "admin@example.com", // Example admin email
+  "juan.gallego@gmail.com",
   // Add more emails here
 ];

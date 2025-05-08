@@ -14,17 +14,18 @@ export function AppHeader() {
   const { user, isLoading, isAuthorized, signInWithGoogle, signOutUser } = useAuth();
 
   const navItems = [
-    { href: '/', label: 'Sign Policy', icon: Home, requiresAuth: true },
-    { href: '/admin', label: 'Admin View', icon: ShieldCheck, requiresAuth: true },
+    { href: '/', label: 'Sign Policy', icon: Home, requiresAuth: false }, // Changed: Sign Policy does not require auth
+    { href: '/admin', label: 'Admin View', icon: ShieldCheck, requiresAuth: true }, // Admin View still requires auth
   ];
 
+  // This filter logic correctly handles the visibility based on requiresAuth
   const availableNavItems = navItems.filter(item => !item.requiresAuth || (user && isAuthorized));
 
   const AuthControls = () => {
     if (isLoading) {
       return <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />;
     }
-    if (user && isAuthorized) {
+    if (user) { // User is signed in, show email and sign out (authorization for nav items is separate)
       return (
         <div className="flex items-center gap-2 sm:gap-4">
           <div className="flex items-center gap-1 text-sm text-muted-foreground">
@@ -38,6 +39,7 @@ export function AppHeader() {
         </div>
       );
     }
+    // User is not signed in
     return (
       <Button variant="outline" size="sm" onClick={signInWithGoogle}>
         <LogIn className="mr-2 h-4 w-4" /> Sign In
@@ -102,7 +104,6 @@ export function AppHeader() {
                   </Link>
                 ))}
               </nav>
-               {/* Mobile Auth Controls can be placed here if needed, or rely on desktop version if sheet closes */}
             </SheetContent>
           </Sheet>
         </div>
@@ -113,3 +114,4 @@ export function AppHeader() {
     </header>
   );
 }
+
