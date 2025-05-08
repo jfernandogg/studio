@@ -15,7 +15,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { getAcceptances } from '@/lib/storage';
 import type { PolicyAcceptance } from '@/types';
-import { Download, Users, FileText, CalendarDays, Edit } from 'lucide-react';
+import { Download, Users, FileText, CalendarDays, Edit, Hash } from 'lucide-react'; // Added Hash
 
 export function AdminDataView() {
   const [acceptances, setAcceptances] = useState<PolicyAcceptance[]>([]);

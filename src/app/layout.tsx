@@ -1,13 +1,10 @@
 import type { Metadata } from 'next';
-import { GeistSans as ImportedGeistSans } from 'geist/font/sans';
-import { GeistMono as ImportedGeistMono } from 'geist/font/mono';
+import { GeistSans } from 'geist/font/sans';
+import { GeistMono } from 'geist/font/mono';
 import './globals.css';
 import { AppHeader } from '@/components/layout/header';
 import { Toaster } from "@/components/ui/toaster";
 import { cn } from "@/lib/utils";
-
-const geistSans = ImportedGeistSans; // Use the font object directly from 'geist/font/sans'
-const geistMono = ImportedGeistMono; // Use the font object directly from 'geist/font/mono'
 
 export const metadata: Metadata = {
   title: 'PrivacyPolicySigner',
@@ -24,11 +21,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body 
+      <body
+        suppressHydrationWarning // Added to address extension-injected attributes
         className={cn(
           "min-h-screen bg-background font-sans antialiased flex flex-col",
-          geistSans.variable, 
-          geistMono.variable
+          GeistSans.variable, 
+          GeistMono.variable
         )}
       >
         <AppHeader />
