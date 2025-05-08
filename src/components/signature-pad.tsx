@@ -26,8 +26,6 @@ export function SignaturePad({
   const [backgroundColor, setBackgroundColor] = useState('hsl(0 0% 100%)'); // Default white
 
   useEffect(() => {
-    // Dynamically get colors from CSS variables
-    // This ensures the canvas matches the theme
     if (typeof window !== 'undefined') {
       const rootStyle = getComputedStyle(document.documentElement);
       const fgHslParts = rootStyle.getPropertyValue('--foreground').trim();
@@ -35,33 +33,51 @@ export function SignaturePad({
       setPenColor(`hsl(${fgHslParts})`);
       setBackgroundColor(`hsl(${cardHslParts})`);
     }
-  }, []); // Runs once on mount
+  }, []);
 
+  // Effect for setting up canvas context, dimensions, and theme-related styles
   useEffect(() => {
     if (canvasRef.current) {
       const canvas = canvasRef.current;
-      const ratio = Math.max(window.devicePixelRatio || 1, 1);
-      canvas.width = width * ratio;
-      canvas.height = height * ratio;
-      canvas.style.width = `${width}px`;
-      canvas.style.height = `${height}px`;
-
       const context = canvas.getContext('2d');
       if (context) {
+        const ratio = Math.max(window.devicePixelRatio || 1, 1);
+        canvas.width = width * ratio;
+        canvas.height = height * ratio;
+        canvas.style.width = `${width}px`;
+        canvas.style.height = `${height}px`;
+        
         context.scale(ratio, ratio);
+        
+        // Clear canvas with current background color
         context.fillStyle = backgroundColor;
         context.fillRect(0, 0, width, height);
+        
+        // Set drawing styles
         context.strokeStyle = penColor;
         context.lineWidth = 2;
         context.lineCap = 'round';
         context.lineJoin = 'round';
         setCtx(context);
-        if (isEmpty) { // Ensure initial empty state is propagated
-             onSignatureChange("");
-        }
       }
     }
-  }, [width, height, backgroundColor, penColor, onSignatureChange, isEmpty]);
+  }, [width, height, backgroundColor, penColor]);
+
+  // Effect to handle isEmpty state: clear canvas and notify parent if isEmpty becomes true.
+  // Also handles initial empty state notification.
+  useEffect(() => {
+    if (ctx && canvasRef.current) { // Ensure context and canvas are available
+      if (isEmpty) {
+        // Clear the canvas visually
+        ctx.fillStyle = backgroundColor;
+        ctx.fillRect(0, 0, width, height);
+        // Notify the parent form that the signature is now empty
+        onSignatureChange("");
+      }
+      // If isEmpty is false, the canvas should retain its content from drawing.
+      // No action needed here for that case.
+    }
+  }, [isEmpty, ctx, backgroundColor, width, height, onSignatureChange]);
 
 
   const getCoordinates = (event: React.MouseEvent | React.TouchEvent): { x: number; y: number } | null => {
@@ -92,7 +108,7 @@ export function SignaturePad({
       ctx.beginPath();
       ctx.moveTo(coords.x, coords.y);
       setIsDrawing(true);
-      if (isEmpty) setIsEmpty(false); // Mark as not empty once drawing starts
+      if (isEmpty) setIsEmpty(false); 
     }
   }, [ctx, isEmpty]);
 
@@ -118,13 +134,11 @@ export function SignaturePad({
   }, [ctx, onSignatureChange, isEmpty]);
 
   const clearSignature = useCallback(() => {
-    if (ctx && canvasRef.current) {
-      ctx.fillStyle = backgroundColor; // Use resolved background color
-      ctx.fillRect(0, 0, width, height);
-      setIsEmpty(true);
-      onSignatureChange("");
-    }
-  }, [ctx, width, height, backgroundColor, onSignatureChange]);
+    // No need to directly manipulate ctx.fillRect here,
+    // as setting isEmpty to true will trigger the useEffect to handle it.
+    setIsEmpty(true);
+    // onSignatureChange("") will also be called by the useEffect reacting to isEmpty.
+  }, []); // Removed dependencies that are now handled by useEffect
 
   useEffect(() => {
     const canvas = canvasRef.current;
