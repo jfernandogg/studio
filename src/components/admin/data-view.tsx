@@ -1,6 +1,7 @@
+
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Image from 'next/image';
 import {
   Table,
@@ -13,18 +14,22 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { getAcceptances } from '@/lib/storage';
+import { getAcceptances as getAcceptancesFromStorage } from '@/lib/storage'; // Renamed to avoid conflict
 import type { PolicyAcceptance } from '@/types';
-import { Download, Users, FileText, CalendarDays, Edit, Hash } from 'lucide-react'; // Added Hash
+import { Download, Users, FileText, CalendarDays, Edit, Hash } from 'lucide-react';
 
 export function AdminDataView() {
   const [acceptances, setAcceptances] = useState<PolicyAcceptance[]>([]);
   const [hydrated, setHydrated] = useState(false);
 
-  useEffect(() => {
-    setAcceptances(getAcceptances());
-    setHydrated(true); // Mark as hydrated after initial data load
+  const fetchAcceptances = useCallback(() => {
+    setAcceptances(getAcceptancesFromStorage());
   }, []);
+
+  useEffect(() => {
+    fetchAcceptances();
+    setHydrated(true);
+  }, [fetchAcceptances]);
 
   const exportToCSV = () => {
     if (!acceptances.length) return;
@@ -51,7 +56,6 @@ export function AdminDataView() {
   };
 
   if (!hydrated) {
-    // Render a loading state or null until hydrated to prevent mismatch
     return (
         <div className="container mx-auto p-4 md:p-8">
             <Card className="shadow-lg">
