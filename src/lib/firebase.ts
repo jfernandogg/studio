@@ -10,6 +10,16 @@ const firebaseConfig = {
   messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
+/*
+const firebaseConfig = {
+  apiKey: "AIzaSyAwzJGaG1EUhv1p30LnaOqxZvgYMKVyMsw",
+  authDomain: "privacypolicysigner.firebaseapp.com",
+  projectId: "privacypolicysigner",
+  storageBucket: "privacypolicysigner.firebasestorage.app",
+  messagingSenderId: "126742134202",
+  appId: "1:126742134202:web:fcf47a09f1a4553ed5f183"
+};
+*/
 
 // For client-side, check and log if any NEXT_PUBLIC_ vars are missing from process.env
 if (typeof window !== 'undefined') {
